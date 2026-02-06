@@ -12,6 +12,7 @@ services:
   # ---------------------------------------------------------------------------
   allure:
     image: frankescobar/allure-docker-service:2.27.0
+    user: "0:0"
     container_name: allure-dashboard
     restart: unless-stopped
     ports:
