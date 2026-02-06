@@ -1,0 +1,43 @@
+# =============================================================================
+# Test Runner: Playwright + Midscene.js
+# Based on official Playwright Docker image
+# =============================================================================
+
+FROM mcr.microsoft.com/playwright:v1.50.0-noble
+
+# Set working directory
+WORKDIR /app
+
+# Install system utilities
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    jq \
+    cron \
+    zip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install Node.js dependencies
+RUN npm install --production=false
+
+# Install Playwright browsers (Chromium only to save space)
+RUN npx playwright install chromium
+
+# Copy test files and scripts
+COPY tests/ ./tests/
+COPY playwright.config.ts ./
+COPY scripts/ ./scripts/
+COPY entrypoint.sh ./
+
+# Make scripts executable
+RUN chmod +x entrypoint.sh scripts/*.sh
+
+# Create directories
+RUN mkdir -p allure-results test-data screenshots
+
+# Health check endpoint
+EXPOSE 3000
+
+ENTRYPOINT ["./entrypoint.sh"]

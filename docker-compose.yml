@@ -1,0 +1,107 @@
+# =============================================================================
+# AI-Powered Web Testing Stack for Coolify
+# Playwright + Midscene.js + Allure Report Dashboard
+# Optimized for Hostinger KVM 2 (8GB RAM, 2 CPU, 100GB disk)
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # Allure Report Dashboard - Web UI for viewing test results
+  # Access: https://your-domain.com (set in Coolify)
+  # ---------------------------------------------------------------------------
+  allure:
+    image: frankescobar/allure-docker-service:2.27.0
+    container_name: allure-dashboard
+    restart: unless-stopped
+    ports:
+      - "5050:5050"
+    environment:
+      CHECK_RESULTS_EVERY_SECONDS: 3
+      KEEP_HISTORY: 1
+      KEEP_HISTORY_LATEST: 25
+      OPTIMIZE_STORAGE: 1
+    volumes:
+      - allure-results:/app/allure-results
+      - allure-reports:/app/default-reports
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5050/allure-docker-service/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+
+  # ---------------------------------------------------------------------------
+  # Allure UI - Optional prettier web interface for reports
+  # Access: https://your-allure-ui-domain.com (set in Coolify)
+  # ---------------------------------------------------------------------------
+  allure-ui:
+    image: frankescobar/allure-docker-service-ui:7.0.3
+    container_name: allure-ui
+    restart: unless-stopped
+    ports:
+      - "5252:5252"
+    environment:
+      ALLURE_DOCKER_PUBLIC_API_URL: "${ALLURE_API_URL:-http://allure:5050}"
+      ALLURE_DOCKER_PUBLIC_API_URL_PREFIX: "/allure-docker-service"
+    depends_on:
+      allure:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.25"
+
+  # ---------------------------------------------------------------------------
+  # Test Runner - Playwright + Midscene.js + Node.js
+  # Runs tests on schedule or manually via API
+  # ---------------------------------------------------------------------------
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.test-runner
+    container_name: test-runner
+    restart: unless-stopped
+    environment:
+      # --- Midscene.js AI Configuration ---
+      # Option 1: Use OpenAI-compatible API (OpenRouter, OpenAI, etc.)
+      MIDSCENE_MODEL_BASE_URL: "${MIDSCENE_MODEL_BASE_URL:-https://openrouter.ai/api/v1}"
+      MIDSCENE_MODEL_API_KEY: "${MIDSCENE_MODEL_API_KEY:-your-api-key-here}"
+      MIDSCENE_MODEL_NAME: "${MIDSCENE_MODEL_NAME:-qwen/qwen-2.5-vl-72b-instruct}"
+      # Option 2: Self-hosted model (uncomment and set URL)
+      # MIDSCENE_MODEL_BASE_URL: "http://your-local-model:8000/v1"
+      # MIDSCENE_MODEL_NAME: "ui-tars"
+
+      # --- Allure Report Server ---
+      ALLURE_SERVER_URL: "http://allure:5050"
+
+      # --- Test Configuration ---
+      TEST_BASE_URL: "${TEST_BASE_URL:-https://your-app.com}"
+      CRON_SCHEDULE: "${CRON_SCHEDULE:-0 */6 * * *}"
+      TZ: "Asia/Kolkata"
+    volumes:
+      - allure-results:/app/allure-results
+      - test-data:/app/test-data
+      - ./tests:/app/tests
+    depends_on:
+      allure:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "1.0"
+
+volumes:
+  allure-results:
+    driver: local
+  allure-reports:
+    driver: local
+  test-data:
+    driver: local
