@@ -17,6 +17,8 @@ services:
     restart: unless-stopped
     ports:
       - "5050:5050"
+    labels:
+      - "traefik.http.services.allure.loadbalancer.server.port=5050"
     environment:
       CHECK_RESULTS_EVERY_SECONDS: 3
       KEEP_HISTORY: 1
