@@ -47,7 +47,7 @@ services:
     ports:
       - "5252:5252"
     environment:
-      ALLURE_DOCKER_PUBLIC_API_URL: "${ALLURE_API_URL:-http://allure:5050}"
+      ALLURE_DOCKER_PUBLIC_API_URL: "https://allure-api.quantandcompany.com"
       ALLURE_DOCKER_PUBLIC_API_URL_PREFIX: "/allure-docker-service"
     depends_on:
       allure:
