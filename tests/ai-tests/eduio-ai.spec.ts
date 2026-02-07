@@ -1,11 +1,13 @@
-import { test } from '@midscene/web/playwright';
+import { test as base, expect } from '@playwright/test';
+import { PlaywrightAiFixture } from '@midscene/web/playwright';
 
 /**
  * EDUIO AI-Powered Tests - Midscene.js
  * These tests use natural language + AI vision to interact with the page.
- * 
- * NOTE: These tests require MIDSCENE_MODEL_API_KEY to be set.
  */
+
+// Extend Playwright test with Midscene AI fixtures
+const test = base.extend<PlaywrightAiFixture>(PlaywrightAiFixture);
 
 test.describe('EDUIO AI Tests - Login Flow', () => {
 
