@@ -85,7 +85,7 @@ services:
       ALLURE_SERVER_URL: "http://allure:5050"
 
       # --- Test Configuration ---
-      TEST_BASE_URL: "${TEST_BASE_URL:-https://your-app.com}"
+      TEST_BASE_URL: "https://school.eduio.io"
       CRON_SCHEDULE: "${CRON_SCHEDULE:-0 */6 * * *}"
       TZ: "Asia/Kolkata"
     volumes:
