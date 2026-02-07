@@ -91,7 +91,6 @@ services:
     volumes:
       - allure-results:/app/allure-results
       - test-data:/app/test-data
-      - ./tests:/app/tests
     depends_on:
       allure:
         condition: service_healthy
