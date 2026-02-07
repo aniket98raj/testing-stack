@@ -1,4 +1,5 @@
 import { test as base, expect } from '@playwright/test';
+import type { PlayWrightAiFixtureType } from '@midscene/web/playwright';
 import { PlaywrightAiFixture } from '@midscene/web/playwright';
 
 /**
@@ -6,8 +7,7 @@ import { PlaywrightAiFixture } from '@midscene/web/playwright';
  * These tests use natural language + AI vision to interact with the page.
  */
 
-// Extend Playwright test with Midscene AI fixtures
-const test = base.extend<PlaywrightAiFixture>(PlaywrightAiFixture);
+const test = base.extend<PlayWrightAiFixtureType>(PlaywrightAiFixture());
 
 test.describe('EDUIO AI Tests - Login Flow', () => {
 
