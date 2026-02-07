@@ -51,7 +51,7 @@ services:
       - "5252:5252"
     environment:
       ALLURE_DOCKER_PUBLIC_API_URL: "https://allure-api.quantandcompany.com"
-      ALLURE_DOCKER_PUBLIC_API_URL_PREFIX: "/allure-docker-service"
+      ALLURE_DOCKER_PUBLIC_API_URL_PREFIX: ""
     depends_on:
       allure:
         condition: service_healthy
