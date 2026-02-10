@@ -37,7 +37,7 @@ export default defineConfig({
   // Global settings
   use: {
     // Base URL for your app under test
-    baseURL: process.env.TEST_BASE_URL || 'https://your-app.com',
+    baseURL: process.env.TEST_BASE_URL || 'https://school.eduio.io',
 
     // Browser settings optimized for Docker
     headless: true,
@@ -47,6 +47,9 @@ export default defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'on-first-retry',
+
+    // Navigation timeout
+    navigationTimeout: 30000,
 
     // Extra HTTP headers (if needed)
     extraHTTPHeaders: {
