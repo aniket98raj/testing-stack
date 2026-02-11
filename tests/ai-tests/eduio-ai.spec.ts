@@ -3,22 +3,12 @@ import type { PlayWrightAiFixtureType } from '@midscene/web/playwright';
 import { PlaywrightAiFixture } from '@midscene/web/playwright';
 
 /**
- * EDUIO AI-Powered Tests - Midscene.js + Gemini Flash
+ * EDUIO AI-Powered Tests - Midscene.js + Ollama (minicpm-v vision model)
  * These tests use natural language + AI vision to interact with the page.
+ * No rate limits - runs on self-hosted Ollama server.
  */
 
-// Pass modelConfig explicitly to ensure modelFamily is set
-const test = base.extend<PlayWrightAiFixtureType>(PlaywrightAiFixture({
-  modelConfig: {
-    MIDSCENE_MODEL_BASE_URL: process.env.MIDSCENE_MODEL_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai/',
-    MIDSCENE_MODEL_API_KEY: process.env.MIDSCENE_MODEL_API_KEY || '',
-    MIDSCENE_MODEL_NAME: process.env.MIDSCENE_MODEL_NAME || 'gemini-2.0-flash',
-    MIDSCENE_MODEL_FAMILY: process.env.MIDSCENE_MODEL_FAMILY || 'gemini',
-  },
-}));
-
-// Helper: small delay between AI calls to avoid Gemini 429 rate limiting
-const aiDelay = () => new Promise(resolve => setTimeout(resolve, 2000));
+const test = base.extend<PlayWrightAiFixtureType>(PlaywrightAiFixture());
 
 test.describe('EDUIO AI Tests - Login Flow', () => {
 
@@ -27,9 +17,7 @@ test.describe('EDUIO AI Tests - Login Flow', () => {
     await page.waitForLoadState('networkidle');
 
     await aiAssert('there is an email or username input field on the page');
-    await aiDelay();
     await aiAssert('there is a password input field on the page');
-    await aiDelay();
     await aiAssert('there is a login or sign in button on the page');
   });
 
@@ -38,9 +26,7 @@ test.describe('EDUIO AI Tests - Login Flow', () => {
     await page.waitForLoadState('networkidle');
 
     await ai('type "admin@eduio.com" in the email input field');
-    await aiDelay();
     await ai('type "your-test-password" in the password field');
-    await aiDelay();
     await ai('click the Login button');
 
     await page.waitForTimeout(5000);
@@ -53,9 +39,7 @@ test.describe('EDUIO AI Tests - Login Flow', () => {
     await page.waitForLoadState('networkidle');
 
     await ai('type "wrong@email.com" in the email field');
-    await aiDelay();
     await ai('type "wrongpassword" in the password field');
-    await aiDelay();
     await ai('click the Login button');
 
     await page.waitForTimeout(3000);
@@ -71,7 +55,6 @@ test.describe('EDUIO AI Tests - Visual Checks', () => {
     await page.waitForLoadState('networkidle');
 
     await aiAssert('the page has a dark theme or professional design');
-    await aiDelay();
     await aiAssert('the login form is centered on the page');
   });
 
@@ -94,9 +77,7 @@ test.describe('EDUIO AI Tests - Navigation', () => {
     await page.waitForLoadState('networkidle');
 
     await ai('type "admin@eduio.com" in the email field');
-    await aiDelay();
     await ai('type "your-test-password" in the password field');
-    await aiDelay();
     await ai('click the Login button');
     await page.waitForTimeout(5000);
 
