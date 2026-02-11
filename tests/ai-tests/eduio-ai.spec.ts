@@ -3,16 +3,26 @@ import type { PlayWrightAiFixtureType } from '@midscene/web/playwright';
 import { PlaywrightAiFixture } from '@midscene/web/playwright';
 
 /**
- * EDUIO AI-Powered Tests - Midscene.js + Ollama (minicpm-v vision model)
+ * EDUIO AI-Powered Tests - Midscene.js + Gemini Flash
  * These tests use natural language + AI vision to interact with the page.
- * No rate limits - runs on self-hosted Ollama server.
  */
 
-const test = base.extend<PlayWrightAiFixtureType>(PlaywrightAiFixture());
+// Pass modelConfig explicitly to ensure modelFamily is set
+const test = base.extend<PlayWrightAiFixtureType>(PlaywrightAiFixture({
+  modelConfig: {
+    MIDSCENE_MODEL_BASE_URL: process.env.MIDSCENE_MODEL_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai/',
+    MIDSCENE_MODEL_API_KEY: process.env.MIDSCENE_MODEL_API_KEY || '',
+    MIDSCENE_MODEL_NAME: process.env.MIDSCENE_MODEL_NAME || 'gemini-2.0-flash',
+    MIDSCENE_MODEL_FAMILY: process.env.MIDSCENE_MODEL_FAMILY || 'gemini',
+  },
+}));
+
+// Helper: small delay between AI calls to avoid Gemini 429 rate limiting
+const aiDelay = () => new Promise(resolve => setTimeout(resolve, 2000));
 
 test.describe('EDUIO AI Tests - Login Flow', () => {
 
-  test('AI: verify login page has all expected elements', async ({ page, aiAssert }) => {
+  test('AI: verify login page has all expected elements', async ({ page, ai, aiAssert }) => {
     await page.goto('/vendor-panel/login');
     await page.waitForLoadState('networkidle');
 
@@ -50,7 +60,7 @@ test.describe('EDUIO AI Tests - Login Flow', () => {
 
 test.describe('EDUIO AI Tests - Visual Checks', () => {
 
-  test('AI: login page looks professional and styled', async ({ page, aiAssert }) => {
+  test('AI: login page looks professional and styled', async ({ page, ai, aiAssert }) => {
     await page.goto('/vendor-panel/login');
     await page.waitForLoadState('networkidle');
 
@@ -58,7 +68,7 @@ test.describe('EDUIO AI Tests - Visual Checks', () => {
     await aiAssert('the login form is centered on the page');
   });
 
-  test('AI: extract all visible text from login page', async ({ page, aiQuery }) => {
+  test('AI: extract all visible text from login page', async ({ page, ai, aiQuery }) => {
     await page.goto('/vendor-panel/login');
     await page.waitForLoadState('networkidle');
 

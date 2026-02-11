@@ -72,10 +72,11 @@ services:
     container_name: test-runner
     restart: unless-stopped
     environment:
-      # --- Midscene.js AI Configuration (Ollama - minicpm-v vision model) ---
-      MIDSCENE_MODEL_BASE_URL: "http://122.176.163.113:11434/v1"
-      MIDSCENE_MODEL_API_KEY: "ollama"
-      MIDSCENE_MODEL_NAME: "minicpm-v"
+      # --- Midscene.js AI Configuration (Gemini Flash) ---
+      MIDSCENE_MODEL_BASE_URL: "https://generativelanguage.googleapis.com/v1beta/openai/"
+      MIDSCENE_MODEL_API_KEY: "AIzaSyBCE-Q2YB_1pIAeaaJzyADOpS6KYC8tpNc"
+      MIDSCENE_MODEL_NAME: "gemini-2.0-flash"
+      MIDSCENE_MODEL_FAMILY: "gemini"
 
       # --- Allure Report Server ---
       ALLURE_SERVER_URL: "http://allure:5050"
