@@ -13,6 +13,16 @@ const test = base.extend<PlayWrightAiFixtureType>(PlaywrightAiFixture({
 
 const aiDelay = () => new Promise(resolve => setTimeout(resolve, 2000));
 
+// Helper: login using native Playwright (fast + reliable for navigation)
+async function login(page: any) {
+  await page.goto('/login', { waitUntil: 'networkidle' });
+  await page.fill('input[placeholder="emailOrMobile *"]', '7277114935');
+  await page.fill('input[type="password"]', '7s6NSeTH');
+  await page.click('button:has-text("Login")');
+  await page.waitForURL('**/');
+  await page.waitForLoadState('networkidle');
+}
+
 test.describe('EDUIO AI Tests - Login Flow', () => {
 
   test('AI: verify login page has all expected elements', async ({ page, ai, aiAssert }) => {
@@ -25,14 +35,10 @@ test.describe('EDUIO AI Tests - Login Flow', () => {
   });
 
   test('AI: complete login flow with valid credentials', async ({ page, ai, aiAssert }) => {
-    await page.goto('/login', { waitUntil: 'networkidle' });
-    await ai('type "7277114935" in the email or mobile input field');
+    await login(page);
+    await aiAssert('the page shows a dashboard with a sidebar menu');
     await aiDelay();
-    await ai('type "7s6NSeTH" in the password field');
-    await aiDelay();
-    await ai('click the Login button');
-    await page.waitForTimeout(8000);
-    await aiAssert('the page shows a dashboard, sidebar menu, or has navigated away from the login page');
+    await aiAssert('the page displays information about teachers or students');
   });
 
   test('AI: verify error message on wrong credentials', async ({ page, ai, aiAssert }) => {
@@ -68,15 +74,9 @@ test.describe('EDUIO AI Tests - Visual Checks', () => {
 test.describe('EDUIO AI Tests - Navigation', () => {
 
   test('AI: navigate through main menu items', async ({ page, ai, aiAssert }) => {
-    await page.goto('/login', { waitUntil: 'networkidle' });
-    await ai('type "7277114935" in the email or mobile input field');
-    await aiDelay();
-    await ai('type "7s6NSeTH" in the password field');
-    await aiDelay();
-    await ai('click the Login button');
-    await page.waitForTimeout(8000);
-    await ai('click on the first menu item in the sidebar or navigation');
+    await login(page);
+    await ai('click on Students in the sidebar menu');
     await page.waitForTimeout(3000);
-    await aiAssert('a new page or section has loaded');
+    await aiAssert('the page shows student information or a student list');
   });
 });
