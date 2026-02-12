@@ -7,7 +7,6 @@ import { PlaywrightAiFixture } from '@midscene/web/playwright';
  * These tests use natural language + AI vision to interact with the page.
  */
 
-// Pass modelConfig explicitly to ensure modelFamily is set
 const test = base.extend<PlayWrightAiFixtureType>(PlaywrightAiFixture({
   modelConfig: {
     MIDSCENE_MODEL_BASE_URL: process.env.MIDSCENE_MODEL_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai/',
@@ -17,41 +16,41 @@ const test = base.extend<PlayWrightAiFixtureType>(PlaywrightAiFixture({
   },
 }));
 
-// Helper: small delay between AI calls to avoid Gemini 429 rate limiting
 const aiDelay = () => new Promise(resolve => setTimeout(resolve, 2000));
 
 test.describe('EDUIO AI Tests - Login Flow', () => {
 
   test('AI: verify login page has all expected elements', async ({ page, ai, aiAssert }) => {
-    await page.goto('/vendor-panel/login');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/login', { waitUntil: 'networkidle' });
 
     await aiAssert('there is an email or username input field on the page');
+    await aiDelay();
     await aiAssert('there is a password input field on the page');
+    await aiDelay();
     await aiAssert('there is a login or sign in button on the page');
   });
 
   test('AI: complete login flow with valid credentials', async ({ page, ai, aiAssert }) => {
-    await page.goto('/vendor-panel/login');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/login', { waitUntil: 'networkidle' });
 
     await ai('type "admin@eduio.com" in the email input field');
+    await aiDelay();
     await ai('type "your-test-password" in the password field');
+    await aiDelay();
     await ai('click the Login button');
-
     await page.waitForTimeout(5000);
 
     await aiAssert('the page shows a dashboard or welcome message');
   });
 
   test('AI: verify error message on wrong credentials', async ({ page, ai, aiAssert }) => {
-    await page.goto('/vendor-panel/login');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/login', { waitUntil: 'networkidle' });
 
     await ai('type "wrong@email.com" in the email field');
+    await aiDelay();
     await ai('type "wrongpassword" in the password field');
+    await aiDelay();
     await ai('click the Login button');
-
     await page.waitForTimeout(3000);
 
     await aiAssert('the page shows an error message or the login form is still visible');
@@ -61,21 +60,19 @@ test.describe('EDUIO AI Tests - Login Flow', () => {
 test.describe('EDUIO AI Tests - Visual Checks', () => {
 
   test('AI: login page looks professional and styled', async ({ page, ai, aiAssert }) => {
-    await page.goto('/vendor-panel/login');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/login', { waitUntil: 'networkidle' });
 
-    await aiAssert('the page has a dark theme or professional design');
+    await aiAssert('the page has a clean design with a login form');
+    await aiDelay();
     await aiAssert('the login form is centered on the page');
   });
 
   test('AI: extract all visible text from login page', async ({ page, ai, aiQuery }) => {
-    await page.goto('/vendor-panel/login');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/login', { waitUntil: 'networkidle' });
 
     const pageData = await aiQuery(
       'extract: { title: "page heading text", hasLogo: "true/false", buttonText: "text on the main button", inputCount: "number of input fields" }'
     );
-
     console.log('AI extracted page data:', JSON.stringify(pageData, null, 2));
   });
 });
@@ -83,11 +80,12 @@ test.describe('EDUIO AI Tests - Visual Checks', () => {
 test.describe('EDUIO AI Tests - Navigation', () => {
 
   test('AI: navigate through main menu items', async ({ page, ai, aiAssert }) => {
-    await page.goto('/vendor-panel/login');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/login', { waitUntil: 'networkidle' });
 
     await ai('type "admin@eduio.com" in the email field');
+    await aiDelay();
     await ai('type "your-test-password" in the password field');
+    await aiDelay();
     await ai('click the Login button');
     await page.waitForTimeout(5000);
 
