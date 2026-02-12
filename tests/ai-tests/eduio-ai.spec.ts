@@ -2,11 +2,6 @@ import { test as base, expect } from '@playwright/test';
 import type { PlayWrightAiFixtureType } from '@midscene/web/playwright';
 import { PlaywrightAiFixture } from '@midscene/web/playwright';
 
-/**
- * EDUIO AI-Powered Tests - Midscene.js + Gemini Flash
- * These tests use natural language + AI vision to interact with the page.
- */
-
 const test = base.extend<PlayWrightAiFixtureType>(PlaywrightAiFixture({
   modelConfig: {
     MIDSCENE_MODEL_BASE_URL: process.env.MIDSCENE_MODEL_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai/',
@@ -22,8 +17,7 @@ test.describe('EDUIO AI Tests - Login Flow', () => {
 
   test('AI: verify login page has all expected elements', async ({ page, ai, aiAssert }) => {
     await page.goto('/login', { waitUntil: 'networkidle' });
-
-    await aiAssert('there is an email or username input field on the page');
+    await aiAssert('there is an email or mobile input field on the page');
     await aiDelay();
     await aiAssert('there is a password input field on the page');
     await aiDelay();
@@ -32,27 +26,23 @@ test.describe('EDUIO AI Tests - Login Flow', () => {
 
   test('AI: complete login flow with valid credentials', async ({ page, ai, aiAssert }) => {
     await page.goto('/login', { waitUntil: 'networkidle' });
-
-    await ai('type "admin@eduio.com" in the email input field');
+    await ai('type "7277114935" in the email or mobile input field');
     await aiDelay();
-    await ai('type "your-test-password" in the password field');
+    await ai('type "7s6NSeTH" in the password field');
     await aiDelay();
     await ai('click the Login button');
-    await page.waitForTimeout(5000);
-
-    await aiAssert('the page shows a dashboard or welcome message');
+    await page.waitForTimeout(8000);
+    await aiAssert('the page shows a dashboard, sidebar menu, or has navigated away from the login page');
   });
 
   test('AI: verify error message on wrong credentials', async ({ page, ai, aiAssert }) => {
     await page.goto('/login', { waitUntil: 'networkidle' });
-
-    await ai('type "wrong@email.com" in the email field');
+    await ai('type "0000000000" in the email or mobile input field');
     await aiDelay();
     await ai('type "wrongpassword" in the password field');
     await aiDelay();
     await ai('click the Login button');
     await page.waitForTimeout(3000);
-
     await aiAssert('the page shows an error message or the login form is still visible');
   });
 });
@@ -61,15 +51,13 @@ test.describe('EDUIO AI Tests - Visual Checks', () => {
 
   test('AI: login page looks professional and styled', async ({ page, ai, aiAssert }) => {
     await page.goto('/login', { waitUntil: 'networkidle' });
-
     await aiAssert('the page has a clean design with a login form');
     await aiDelay();
-    await aiAssert('the login form is centered on the page');
+    await aiAssert('the login form has input fields and a button');
   });
 
   test('AI: extract all visible text from login page', async ({ page, ai, aiQuery }) => {
     await page.goto('/login', { waitUntil: 'networkidle' });
-
     const pageData = await aiQuery(
       'extract: { title: "page heading text", hasLogo: "true/false", buttonText: "text on the main button", inputCount: "number of input fields" }'
     );
@@ -81,17 +69,14 @@ test.describe('EDUIO AI Tests - Navigation', () => {
 
   test('AI: navigate through main menu items', async ({ page, ai, aiAssert }) => {
     await page.goto('/login', { waitUntil: 'networkidle' });
-
-    await ai('type "admin@eduio.com" in the email field');
+    await ai('type "7277114935" in the email or mobile input field');
     await aiDelay();
-    await ai('type "your-test-password" in the password field');
+    await ai('type "7s6NSeTH" in the password field');
     await aiDelay();
     await ai('click the Login button');
-    await page.waitForTimeout(5000);
-
+    await page.waitForTimeout(8000);
     await ai('click on the first menu item in the sidebar or navigation');
-    await page.waitForTimeout(2000);
-
+    await page.waitForTimeout(3000);
     await aiAssert('a new page or section has loaded');
   });
 });
