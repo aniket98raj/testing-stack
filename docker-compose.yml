@@ -74,7 +74,7 @@ services:
     environment:
       # --- Midscene.js AI Configuration (Gemini Flash) ---
       MIDSCENE_MODEL_BASE_URL: "https://generativelanguage.googleapis.com/v1beta/openai/"
-      MIDSCENE_MODEL_API_KEY: "AIzaSyBCE-Q2YB_1pIAeaaJzyADOpS6KYC8tpNc"
+      MIDSCENE_MODEL_API_KEY: "AIzaSyByolJHu7UQjnmvWlHmkN3Ehat0IBNZXng"
       MIDSCENE_MODEL_NAME: "gemini-2.0-flash"
       MIDSCENE_MODEL_FAMILY: "gemini"
 
